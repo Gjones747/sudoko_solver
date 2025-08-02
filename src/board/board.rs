@@ -15,7 +15,7 @@ impl Board {
                 if row[i].val == 0 {
                     print!(" _ ")
                 } else {
-                    print!("{0}", row[i].val)
+                    print!(" {0} ", row[i].val)
                 }
             }
             print!("|")
