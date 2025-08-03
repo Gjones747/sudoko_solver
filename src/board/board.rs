@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use crate::board;
 
 
 pub struct Board {
@@ -80,8 +79,8 @@ impl Board {
     //     println!("{0}", tile.position[0]);
     // }
 
-    fn check_board(&self) {
-        fn check_row(board: Board, row_number: i8) -> bool {
+    pub fn check_board(&self) -> bool{
+        fn check_row(board: &Board, row_number: i8) -> bool {
             let mut previous: HashMap<i8, i8>= HashMap::new();
 
             for i in 0..9 {
@@ -97,7 +96,7 @@ impl Board {
 
         }
 
-        fn check_col(board: Board, col_number: i8) -> bool {
+        fn check_col(board: &Board, col_number: i8) -> bool {
             let mut previous: HashMap<i8, i8>= HashMap::new();
 
             for i in 0..9 {
@@ -112,33 +111,42 @@ impl Board {
             return true
         }
 
-        fn check_box(board: Board, row: i8, col:i8) -> bool {
-
-            fn individual_box(board:Board, start_row:i8, start_col:i8) -> bool {
-                let mut previous: HashMap<i8, i8>= HashMap::new();
-                for row in start_row..(start_row+3) {
-                    for col in start_col..(start_col+3) {
-                        let current_tile:Tile = board.board_array[row as usize][col as usize];
-                        if previous.contains_key(&current_tile.val){
-                            return false
-                        }
-                        previous.insert(current_tile.val as i8, row as i8);
-
+        fn check_box(board: &Board, start_row: i8, start_col:i8) -> bool {
+            let mut previous: HashMap<i8, i8>= HashMap::new();
+            for row in start_row..(start_row+3) {
+                for col in start_col..(start_col+3) {
+                    let current_tile:Tile = board.board_array[row as usize][col as usize];
+                    if previous.contains_key(&current_tile.val){
+                        return false
                     }
+                    previous.insert(current_tile.val as i8, row as i8);
+
                 }
-
-                return true
-            }
-
-            if row/3 >= 2 &&  col/3 >= 2 {
-                return individual_box(board, 6, 6)
-            } else if row/3 >= 2 && col/3 >= 1 {
-                return individual_box(board, 6, 3);
             }
 
             return true
         }
 
+        for i in 0..9 {
+            if check_row(self, i) == false {
+                return false
+            }
+            if check_col(self, i) == false {
+                return false
+            }
+        }
+
+        let iterate_nums = [0, 3, 6];
+
+        for row in iterate_nums {
+            for col in iterate_nums {
+                if check_box(self, row, col) == false  {
+                    return false
+                }
+            }
+        }
+
+        return true
 
     }
 }

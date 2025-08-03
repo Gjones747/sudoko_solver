@@ -43,5 +43,11 @@ fn main() {
 
     board.print_board();
 
+    if board.check_board() {
+        println!("solved")
+    } else {
+        println!("not solved")
+    }
+
 }
 
