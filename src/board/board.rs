@@ -4,7 +4,7 @@ use std::collections::HashMap;
 
 pub struct Board {
     board_array: [[Tile; 9]; 9], // defines the layout of all the tiles 
-    solved: bool, // board state 
+    pub solved: bool, // board state 
 }
 
 impl Board {
@@ -55,7 +55,7 @@ impl Board {
 
         for row in 0..9 {
             for col in 0..9 {
-                board.board_array[row][col].position = [row as i8, col as i8]
+                board.board_array[row][col].position = [row as i8, col as i8];
             }
         }
 
@@ -67,8 +67,7 @@ impl Board {
             for col in 0..9 {
                 if (row as i8) == set_row && (col as i8) == set_col {
                     self.board_array[row][col].val = val;
-                    self.board_array[row][col].locked = true
-                    
+                    self.board_array[row][col].locked = true;
                 }
             }
         }
@@ -79,60 +78,87 @@ impl Board {
     //     println!("{0}", tile.position[0]);
     // }
 
-    pub fn check_board(&self) -> bool{
-        fn check_row(board: &Board, row_number: i8) -> bool {
+    pub fn check_board(&mut self) -> bool{
+        //each of the mini functions return a size 2 array 
+        // [is board broken, is there a 0 in board]
+        fn check_row(board: &Board, row_number: i8) -> [bool; 2] {
             let mut previous: HashMap<i8, i8>= HashMap::new();
 
             for i in 0..9 {
                 let current_square:Tile = board.board_array[row_number as usize][i];
-                if previous.contains_key(&current_square.val){
-                    return false
+                if previous.contains_key(&current_square.val) && current_square.val != 0{
+                    return [false, false]
                 }
                 previous.insert(current_square.val as i8, i as i8);
 
             }
 
-            return true
+            if previous.contains_key(&0) {
+                return [true, false]
+            }
+            return [true, true]
 
         }
 
-        fn check_col(board: &Board, col_number: i8) -> bool {
+        fn check_col(board: &Board, col_number: i8) -> [bool; 2] {
             let mut previous: HashMap<i8, i8>= HashMap::new();
 
             for i in 0..9 {
                 let current_square:Tile = board.board_array[i][col_number as usize];
-                if previous.contains_key(&current_square.val){
-                    return false
+                if previous.contains_key(&current_square.val) && current_square.val != 0{
+                    return [false, false]
                 }
+                
                 previous.insert(current_square.val as i8, i as i8);
 
             }
 
-            return true
+            if previous.contains_key(&0) {
+                return [true, false]
+            }
+
+            return [true, true]
         }
 
-        fn check_box(board: &Board, start_row: i8, start_col:i8) -> bool {
+        fn check_box(board: &Board, start_row: i8, start_col:i8) -> [bool; 2] {
             let mut previous: HashMap<i8, i8>= HashMap::new();
             for row in start_row..(start_row+3) {
                 for col in start_col..(start_col+3) {
                     let current_tile:Tile = board.board_array[row as usize][col as usize];
-                    if previous.contains_key(&current_tile.val){
-                        return false
+                    if previous.contains_key(&current_tile.val) && current_tile.val != 0{
+                        return [false, false]
                     }
                     previous.insert(current_tile.val as i8, row as i8);
 
                 }
-            }
 
-            return true
+                if previous.contains_key(&0) {
+                    return [true, false]
+                }
+                
+                return [true, true]
+            }
+            
+
+
+
+            return [true, true]
         }
 
+        let mut complete_check = true;
+
         for i in 0..9 {
-            if check_row(self, i) == false {
+            let check_current_row = check_row(&self, i);
+            let check_current_col = check_col(&self, i);
+            if check_current_row[0] == false {
                 return false
             }
-            if check_col(self, i) == false {
+            if check_current_col[0] == false {
                 return false
+            }
+
+            if !check_current_col[1] || !check_current_row[1] {
+                complete_check = false;
             }
         }
 
@@ -140,11 +166,23 @@ impl Board {
 
         for row in iterate_nums {
             for col in iterate_nums {
-                if check_box(self, row, col) == false  {
+                let current_check = check_box(&self, row, col);
+                if current_check[0] == false  {
                     return false
+                } else if current_check[1] == false {
+                    complete_check = false
                 }
             }
         }
+
+        if complete_check {
+            self.solved = true
+        }
+        
+        //returns true if the whole thing is solved 
+        //however i need to write it so that it can check whether it is not broken even if it isnt solved
+            
+
 
         return true
 
