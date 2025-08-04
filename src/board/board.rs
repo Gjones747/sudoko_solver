@@ -207,21 +207,16 @@ impl Board {
         if current == [-1, -1] {
             return true;
         }
-        self.print_board();
         for num in 1..=9 {
             
             self.board_array[current[0] as usize][current[1] as usize].val = num;
-
+            self.print_board();
             if self.check_board() {
                 if self.solve() {
                     return true;
                 }
-                self.board_array[current[0] as usize][current[1] as usize].val = 0;
-
-            } else {
-                self.board_array[current[0] as usize][current[1] as usize].val = 0;
-
-            }
+            } 
+            self.board_array[current[0] as usize][current[1] as usize].val = 0;
         }
         return false;
 
