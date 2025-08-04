@@ -188,23 +188,22 @@ impl Board {
 
     // this is where the magic is gonna happen
     pub fn solve(&mut self, row: i8, col: i8) {
-        let mut next_row: i8 = 0;
-        let mut next_col: i8 = 0;
+        let mut next_row: i8 = row;
+        let mut next_col: i8 = col;
         if col == 8 {
-            next_row = row + 1;
+            next_row += 1;
             next_col = 0;
         } else {
-            next_col = col + 1
+            next_col += 1
         }
-        
+        println!("{0}", row);
 
-        let mut current_tile = self.board_array[row as usize][col as usize];
-        if current_tile.locked {
+        if self.board_array[row as usize][col as usize].locked {
             self.solve(next_row, next_col);
         }
 
         for i in 1..10 {
-            current_tile.val = i;
+            self.board_array[row as usize][col as usize].val = i;
             if self.check_board() {
                 self.print_board();
                 // solve with next
