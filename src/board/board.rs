@@ -1,5 +1,7 @@
 use std::{collections::HashMap, iter::Skip};
 
+use crate::board;
+
 
 
 pub struct Board {
@@ -43,6 +45,7 @@ impl Board {
 
         let uninit_tile = Tile {
             locked: false, 
+            failed: [-1; 9],
             position: [-1, -1],
             val: 0,
             //possible_values: [0; 9]
@@ -187,29 +190,44 @@ impl Board {
     }
 
     // this is where the magic is gonna happen
-    pub fn solve(&mut self, row: i8, col: i8) {
-        let mut next_row: i8 = row;
-        let mut next_col: i8 = col;
-        if col == 8 {
-            next_row += 1;
-            next_col = 0;
-        } else {
-            next_col += 1
+    pub fn solve(&mut self) -> bool {
+        self.check_board();
+        if self.solved {
+            return true
         }
-        println!("{0}", row);
-
-        if self.board_array[row as usize][col as usize].locked {
-            self.solve(next_row, next_col);
-        }
-
-        for i in 1..10 {
-            self.board_array[row as usize][col as usize].val = i;
-            if self.check_board() {
-                self.print_board();
-                // solve with next
-                self.solve(next_row, next_col);
+        let mut current: [isize;2] = [-1, -1];// row, col
+        for row in 0..9 {
+            for col in 0..9 {
+                if self.board_array[row][col].val == 0 {
+                    current = [row as isize, col as isize]
+                }
             }
         }
+
+        if current == [-1, -1] {
+            return true;
+        }
+        self.print_board();
+        for num in 1..=9 {
+            
+            self.board_array[current[0] as usize][current[1] as usize].val = num;
+
+            if self.check_board() {
+                if self.solve() {
+                    return true;
+                }
+                self.board_array[current[0] as usize][current[1] as usize].val = 0;
+
+            } else {
+                self.board_array[current[0] as usize][current[1] as usize].val = 0;
+
+            }
+        }
+        return false;
+
+
+
+
     }
 
 
@@ -220,6 +238,7 @@ struct Tile {
     val: i8, // 0 if null
     locked: bool,
     // possible_values: [i8; 9],
+    failed: [i8; 9],
     position: [i8; 2] // each tile will store its own position in the board ROW COL
 }
 

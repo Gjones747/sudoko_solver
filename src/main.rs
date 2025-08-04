@@ -150,7 +150,21 @@ fn main() {
         println!("board not solved")
     }
 
-    board.solve(0,0);
+    board.solve();
+
+    if board.check_board() {
+        println!("board not broken")
+    } else {
+        println!("board broken")
+    }
+
+    if board.solved {
+        println!("board solved")
+    } else {
+        println!("board not solved")
+    }
+
+    board.print_board();
 
 }
 
