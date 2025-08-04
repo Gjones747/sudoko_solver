@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, iter::Skip};
 
 
 
@@ -182,11 +182,38 @@ impl Board {
         //returns true if the whole thing is solved 
         //however i need to write it so that it can check whether it is not broken even if it isnt solved
             
-
-
         return true
 
     }
+
+    // this is where the magic is gonna happen
+    pub fn solve(&mut self, row: i8, col: i8) {
+        let mut next_row: i8 = 0;
+        let mut next_col: i8 = 0;
+        if col == 8 {
+            next_row = row + 1;
+            next_col = 0;
+        } else {
+            next_col = col + 1
+        }
+        
+
+        let mut current_tile = self.board_array[row as usize][col as usize];
+        if current_tile.locked {
+            self.solve(next_row, next_col);
+        }
+
+        for i in 1..10 {
+            current_tile.val = i;
+            if self.check_board() {
+                self.print_board();
+                // solve with next
+                self.solve(next_row, next_col);
+            }
+        }
+    }
+
+
 }
 
 #[derive(Clone, Copy)]

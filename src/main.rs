@@ -150,5 +150,7 @@ fn main() {
         println!("board not solved")
     }
 
+    board.solve(0,0);
+
 }
 
