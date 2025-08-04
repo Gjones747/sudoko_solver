@@ -1,4 +1,12 @@
-pub mod board;
+use std::{ io::stdout, thread::sleep, time::Duration};
+
+use crossterm::{cursor::Hide, event::{read, Event, KeyCode, KeyEvent}, execute, terminal::{self, EnterAlternateScreen}};
+
+use crate::cli_tools::draw_board;
+
+mod board;
+mod cli_tools;
+
 fn main() {
     let mut board: board::board::Board = board::board::Board::make_board();
 
@@ -136,35 +144,34 @@ fn main() {
     // board.set_input_tile(8, 8, 9);
 
 
-    board.print_board();
+    // board.print_board();
 
-    if board.check_board() {
-        println!("board not broken")
-    } else {
-        println!("board broken")
+
+    // board.solve();
+
+
+
+    // board.print_board();
+    let mut stdout = stdout();
+    terminal::enable_raw_mode().expect("msg");
+
+    execute!(stdout, EnterAlternateScreen, Hide).expect("msg");
+    cli_tools::draw_board::draw_board(board, &mut stdout);
+    let mut running = true;
+
+    while running {
+        if let Event::Key(key_event) = read().expect("fail") {
+            if key_event.code == KeyCode::Char('q') {
+                running = false;
+            }
+        }
+
+        if let Event::Key(key_event) = read().expect("fail") {
+            cli_tools::draw_board::draw_board(board, &mut stdout);
+        }
     }
 
-    if board.solved {
-        println!("board solved")
-    } else {
-        println!("board not solved")
-    }
 
-    board.solve();
-
-    if board.check_board() {
-        println!("board not broken")
-    } else {
-        println!("board broken")
-    }
-
-    if board.solved {
-        println!("board solved")
-    } else {
-        println!("board not solved")
-    }
-
-    board.print_board();
 
 }
 

@@ -1,9 +1,6 @@
 use std::{collections::HashMap, iter::Skip};
 
-use crate::board;
-
-
-
+#[derive(Clone, Copy)]
 pub struct Board {
     board_array: [[Tile; 9]; 9], // defines the layout of all the tiles 
     pub solved: bool, // board state 
@@ -191,6 +188,8 @@ impl Board {
 
     // this is where the magic is gonna happen
     pub fn solve(&mut self) -> bool {
+        self.print_board();
+
         self.check_board();
         if self.solved {
             return true
@@ -210,7 +209,6 @@ impl Board {
         for num in 1..=9 {
             
             self.board_array[current[0] as usize][current[1] as usize].val = num;
-            self.print_board();
             if self.check_board() {
                 if self.solve() {
                     return true;
