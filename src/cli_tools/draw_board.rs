@@ -1,43 +1,60 @@
-use std::io::{stdout, Cursor, Stdout, Write};
+use std::io::Stdout;
 
-use crossterm::{cursor::{self, MoveTo}, execute, style::{Color, Print, ResetColor, SetForegroundColor}, terminal::{self, Clear, ClearType}, ExecutableCommand, QueueableCommand};
+use crossterm::{cursor::MoveTo, execute, style::Print, terminal, ExecutableCommand};
 
 use crate::board;
 
-pub fn draw_board(board: board::board::Board, stdout: &mut Stdout) {
 
-    stdout.execute(Clear(ClearType::All)).expect("failed to clear");
-    
-    let (cols, rows) = terminal::size().expect("terminal size failed");
 
-    let center: [u16; 2] = [rows/2, cols/2];
-    stdout.execute(MoveTo(0, 0)).expect("failed to move");
+pub fn draw_board(board: &board::board::Board, stdout: &mut Stdout) {
 
-    for i in 1..cols {
-        execute!(
-            stdout,
-            Print("─"),
-            MoveTo(i, 0)
-        ).expect("failed to print");
+    let (center_x, center_y) = terminal::size().expect("failed to get size");
+
+    // sudoku print out is exactly 31 characters wide
+    // should be 13 characters in height
+
+    let (start_x, start_y) = ((center_x /2) - 15, (center_y /2) -7);
+
+    fn print_row(row: [board::board::Tile; 9]) {
+        print!("│");
+        for i in 0..9 {
+            if i == 3 || i == 6 {
+                print!("│")
+            }
+            if row[i].val == 0 {
+                print!(" - ")
+            } else {
+                print!(" {0} ", row[i].val)
+            }
+        }
+        print!("│")
     }
 
-    stdout.execute(MoveTo(0, 0)).expect("failed to move");
-    for i in 1..rows-1 {
-        execute!(
-            stdout,
-            Print("|"),
-            MoveTo(0, i)
-        ).expect("failed to draw column");
-    }
+    execute!(
+        stdout, 
+        MoveTo(start_x, start_y),
+        Print("┌─────────────────────────────┐"),
+    ).expect("");
 
-    stdout.execute(MoveTo(cols-1, 0)).expect("failed to move");
-    for i in 1..rows-1 {
-        execute!(
-            stdout,
-            Print("|"),
-            MoveTo(cols-1, i)
-        ).expect("failed to draw column");
+    let mut current_y = start_y ;
+
+    for i in 0..9 {
+        current_y+=1;
+        if i == 3 || i == 6 {
+                stdout.execute(MoveTo(start_x, current_y as u16)).expect("failed");
+
+                println!("│─────────────────────────────│");
+                current_y += 1;
+        }
+        stdout.execute(MoveTo(start_x, current_y as u16)).expect("failed");
+
+        print_row(board.board_array[i]);
     }
-    stdout.flush().expect("goon");
+    stdout.execute(MoveTo(start_x, current_y+1 as u16)).expect("failed");
+    print_row(board.board_array[8]);
+    stdout.execute(MoveTo(start_x, current_y+1 as u16)).expect("failed");
+    println!("└─────────────────────────────┘");
+
+
 
 }

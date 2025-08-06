@@ -1,8 +1,6 @@
 use std::{ io::stdout, thread::sleep, time::Duration};
 
-use crossterm::{cursor::Hide, event::{read, Event, KeyCode, KeyEvent}, execute, terminal::{self, EnterAlternateScreen}};
-
-use crate::cli_tools::draw_board;
+use crossterm::{cursor::Hide, event::{read, Event, KeyCode, KeyEvent}, execute, style::SetAttribute, terminal::{self, EnterAlternateScreen}};
 
 mod board;
 mod cli_tools;
@@ -155,9 +153,17 @@ fn main() {
     let mut stdout = stdout();
     terminal::enable_raw_mode().expect("msg");
 
-    execute!(stdout, EnterAlternateScreen, Hide).expect("msg");
-    cli_tools::draw_board::draw_board(board, &mut stdout);
+    execute!(
+        stdout, 
+        EnterAlternateScreen, 
+        Hide,
+        SetAttribute(crossterm::style::Attribute::Bold),
+
+    ).expect("msg");
+    cli_tools::draw_board::draw_board(&board, &mut stdout);
     let mut running = true;
+
+
 
     while running {
         if let Event::Key(key_event) = read().expect("fail") {
@@ -167,11 +173,11 @@ fn main() {
         }
 
         if let Event::Key(key_event) = read().expect("fail") {
-            cli_tools::draw_board::draw_board(board, &mut stdout);
+            cli_tools::draw_outline::draw_outline(&mut stdout);
         }
     }
 
 
-
+    terminal::disable_raw_mode().err();
 }
 

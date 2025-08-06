@@ -2,7 +2,7 @@ use std::{collections::HashMap, iter::Skip};
 
 #[derive(Clone, Copy)]
 pub struct Board {
-    board_array: [[Tile; 9]; 9], // defines the layout of all the tiles 
+    pub board_array: [[Tile; 9]; 9], // defines the layout of all the tiles 
     pub solved: bool, // board state 
 }
 
@@ -227,8 +227,8 @@ impl Board {
 }
 
 #[derive(Clone, Copy)]
-struct Tile {
-    val: i8, // 0 if null
+pub struct Tile {
+    pub(crate) val: i8, // 0 if null
     locked: bool,
     // possible_values: [i8; 9],
     failed: [i8; 9],
