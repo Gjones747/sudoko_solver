@@ -1,5 +1,5 @@
 use core::time;
-use std::{io::Stdout, thread, time::Duration};
+use std::{io::Stdout, thread, time::{Duration, Instant}};
 
 use crossterm::{cursor::MoveTo, event::{poll, read, Event, KeyCode, KeyEvent}, execute, style::Print, terminal};
 
@@ -26,29 +26,36 @@ pub fn blinker(stdout: &mut Stdout, board: board::board::Board, row: u16, col: u
         if col >= 7 {
             real_x += 1;
         }
-        thread::scope(|s| {
-            s.spawn(|| {
+        let mut toggle = Instant::now();
+        let mut show_dash = false;
+
+        execute!(
+            stdout,
+            MoveTo(real_x, real_y),
+            Print(if show_dash {" - "} else {"  "})
+        ).expect("fail");
+
+        loop {
+            if toggle.elapsed() >= Duration::from_millis(400) {
+                show_dash = !show_dash;
                 execute!(
                     stdout,
                     MoveTo(real_x, real_y),
-                    Print("   ")
+                    Print(if show_dash {" - "} else {"  "})
                 ).expect("fail");
+                toggle = Instant::now();
+            }
+            
 
-                thread::sleep(time::Duration::from_millis(500));
-
-                execute!(
-                    stdout,
-                    MoveTo(real_x, real_y),
-                    Print(" - ")
-                ).expect("fail");
-            });
-
-        });
-        
-
-        while poll(Duration::from_millis(500)).expect("msg") {
-            if let Event::Key(key_event) = read().expect("msg") {
-                return key_event
+            if poll(Duration::from_millis(10)).expect("msg") {
+                if let Event::Key(key_event) = read().expect("msg") {
+                    execute!(
+                        stdout,
+                        MoveTo(real_x, real_y),
+                        Print(" - ")
+                    ).expect("fail");
+                    return key_event
+                }
             }
         }
 
