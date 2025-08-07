@@ -84,7 +84,33 @@ fn main() {
             running = false;
             break;
         } else if key_press.code == KeyCode::Right {
+            if current_col == 9 {
+                current_col = 0;
+                if current_row == 9 {
+                    current_row = 0;
+                }
+                current_row += 1;
+            }
             current_col += 1;
+        } else if key_press.code == KeyCode::Left {
+            if current_col == 1 {
+                if current_row == 1 {
+                    current_row = 10;
+                }
+                current_col = 10;
+                current_row -= 1;
+            }
+            current_col -= 1;
+        } else if key_press.code == KeyCode::Down {
+            if current_row == 9 {
+                current_row = 0;
+            }
+            current_row += 1;
+        } else if key_press.code == KeyCode::Up {
+            if current_row == 1 {
+                current_row = 10
+            }
+            current_row -= 1;
         }
 
 

@@ -26,6 +26,15 @@ pub fn blinker(stdout: &mut Stdout, board: board::board::Board, row: u16, col: u
         if col >= 7 {
             real_x += 1;
         }
+
+        if row >= 4 {
+            real_y += 1;
+        }
+
+        if row >= 7 {
+            real_y += 1;
+        }
+
         let mut toggle = Instant::now();
         let mut show_dash = false;
 
