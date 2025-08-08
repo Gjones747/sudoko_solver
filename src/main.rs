@@ -11,7 +11,7 @@ fn main() {
     let mut board: board::board::Board = board::board::Board::make_board();
 
     //this is a board setup written by chatgpt cuz the input is tedious right now
-    // board.set_input_tile(0, 0, 5);
+    board.set_input_tile(0, 0, 5);
     // board.set_input_tile(0, 1, 3);
     // board.set_input_tile(0, 4, 7);
 
@@ -52,15 +52,12 @@ fn main() {
 
 
 
-    // board.print_board();
-
-
-    // board.solve();
-
-
-
-    // board.print_board();
     let mut stdout = stdout();
+
+
+    // board.print_board();
+    // board.solve(&mut stdout);
+
     terminal::enable_raw_mode().expect("msg");
 
     execute!(
