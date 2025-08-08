@@ -1,12 +1,11 @@
-use core::time;
-use std::{io::Stdout, thread, time::{Duration, Instant}};
+use std::{io::Stdout, time::{Duration, Instant}};
 
-use crossterm::{cursor::MoveTo, event::{poll, read, Event, KeyCode, KeyEvent}, execute, style::Print, terminal};
+use crossterm::{cursor::MoveTo, event::{poll, read, Event, KeyEvent}, execute, style::{Print, SetAttribute}, terminal};
 
 use crate::board;
 
 
-pub fn blinker(stdout: &mut Stdout, board: board::board::Board, row: u16, col: u16) -> KeyEvent {
+pub fn blinker(stdout: &mut Stdout, board: board::board::Board, row: u16, col: u16, move_to: bool) -> KeyEvent {
     let (center_x, center_y) = terminal::size().expect("failed to get size");
 
     // sudoku print out is exactly 31 characters wide
@@ -38,7 +37,16 @@ pub fn blinker(stdout: &mut Stdout, board: board::board::Board, row: u16, col: u
         let mut toggle = Instant::now();
         let mut show_dash = false;
 
-        if board.board_array[(row-1) as usize][(col-1) as usize].val == 0 {
+        if !board.board_array[(row-1) as usize][(col-1) as usize].locked &&  board.board_array[(row-1) as usize][(col-1) as usize].val != 0 {
+            execute!(
+                stdout, 
+                SetAttribute(crossterm::style::Attribute::Reset),
+                SetAttribute(crossterm::style::Attribute::Dim)
+            ).expect("msg");
+        }
+
+
+        if board.board_array[(row-1) as usize][(col-1) as usize].val == 0 || move_to{
             execute!(
                 stdout,
                 MoveTo(real_x, real_y),
@@ -90,6 +98,12 @@ pub fn blinker(stdout: &mut Stdout, board: board::board::Board, row: u16, col: u
                             ).expect("fail");
                             println!(" {0} ", board.board_array[(row-1) as usize][(col-1) as usize].val)
                     }
+
+                    execute!(
+                        stdout, 
+                        SetAttribute(crossterm::style::Attribute::Reset),
+                        SetAttribute(crossterm::style::Attribute::Bold)
+                    ).expect("msg");
                     return key_event
                 }
             }

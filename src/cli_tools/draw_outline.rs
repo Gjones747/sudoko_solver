@@ -1,6 +1,6 @@
-use std::io::{stdout, Cursor, Stdout, Write};
+use std::io::{ Stdout, Write};
 
-use crossterm::{cursor::{self, MoveTo}, execute, style::{Color, Print, ResetColor, SetForegroundColor}, terminal::{self, Clear, ClearType}, ExecutableCommand, QueueableCommand};
+use crossterm::{cursor::{MoveTo}, execute, style::{ Print}, terminal::{self, Clear, ClearType}, ExecutableCommand, QueueableCommand};
 
 pub fn draw_outline(stdout: &mut Stdout) {
 

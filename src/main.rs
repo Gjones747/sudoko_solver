@@ -1,8 +1,6 @@
-use std::{ io::stdout, thread::sleep, time::Duration};
+use std::{ io::stdout};
 
-use crossterm::{cursor::Hide, event::{read, Event, KeyCode, KeyEvent}, execute, style::SetAttribute, terminal::{self, Clear, ClearType, EnterAlternateScreen}};
-
-use crate::cli_tools::blinker;
+use crossterm::{cursor::Hide, event::{ KeyCode, KeyEvent}, execute, style::SetAttribute, terminal::{self, Clear, ClearType, EnterAlternateScreen}};
 
 mod board;
 mod cli_tools;
@@ -11,7 +9,7 @@ fn main() {
     let mut board: board::board::Board = board::board::Board::make_board();
 
     //this is a board setup written by chatgpt cuz the input is tedious right now
-    board.set_input_tile(0, 0, 5);
+    // board.set_input_tile(0, 0, 5);
     // board.set_input_tile(0, 1, 3);
     // board.set_input_tile(0, 4, 7);
 
@@ -68,17 +66,16 @@ fn main() {
 
     ).expect("msg");
     cli_tools::draw_board::draw_board(&board, &mut stdout);
-    let mut running = true;
 
     let (mut current_row, mut current_col) = (1, 1);
+    let mut move_to = false; 
 
-    while running {
+    loop {
 
-        let key_press:KeyEvent = cli_tools::blinker::blinker(&mut stdout, board, current_row, current_col);
-
+        let key_press:KeyEvent = cli_tools::blinker::blinker(&mut stdout, board, current_row, current_col, move_to);
+        move_to = true;
 
         if key_press.code == KeyCode::Char('q') {
-            running = false;
             break;
         } else if key_press.code == KeyCode::Right {
             if current_col == 9 {
@@ -89,6 +86,7 @@ fn main() {
                 current_row += 1;
             }
             current_col += 1;
+            
         } else if key_press.code == KeyCode::Left {
             if current_col == 1 {
                 if current_row == 1 {
@@ -110,9 +108,11 @@ fn main() {
             current_row -= 1;
         } else if key_press.code == KeyCode::Backspace {
             board.delete_set((current_row-1) as i8, (current_col-1) as i8);
+            move_to = false;
         
         } else if key_press.code == KeyCode::Enter {
             board.solve(&mut stdout);
+            move_to = false;
             
 
         } else {
@@ -129,6 +129,7 @@ fn main() {
 
                 }
             }
+            move_to = false;
         }
 
 

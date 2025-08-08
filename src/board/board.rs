@@ -1,6 +1,6 @@
-use std::{collections::HashMap, io::Stdout, iter::Skip};
+use std::{collections::HashMap, io::Stdout};
 
-use crate::{board, cli_tools};
+use crate::{cli_tools};
 
 #[derive(Clone, Copy)]
 pub struct Board {
@@ -44,7 +44,6 @@ impl Board {
 
         let uninit_tile = Tile {
             locked: false, 
-            failed: [-1; 9],
             position: [-1, -1],
             val: 0,
             //possible_values: [0; 9]
@@ -226,9 +225,8 @@ impl Board {
 #[derive(Clone, Copy)]
 pub struct Tile {
     pub(crate) val: i8, // 0 if null
-    locked: bool,
+    pub locked: bool,
     // possible_values: [i8; 9],
-    failed: [i8; 9],
     position: [i8; 2] // each tile will store its own position in the board ROW COL
 }
 
