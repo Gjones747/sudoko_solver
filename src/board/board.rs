@@ -1,6 +1,6 @@
 use std::{collections::HashMap, io::Stdout, iter::Skip};
 
-use crate::cli_tools;
+use crate::{board, cli_tools};
 
 #[derive(Clone, Copy)]
 pub struct Board {
@@ -122,6 +122,7 @@ impl Board {
 
         fn check_box(board: &Board, start_row: i8, start_col:i8) -> [bool; 2] {
             let mut previous: HashMap<i8, i8>= HashMap::new();
+
             for row in start_row..(start_row+3) {
                 for col in start_col..(start_col+3) {
                     let current_tile:Tile = board.board_array[row as usize][col as usize];
@@ -132,17 +133,13 @@ impl Board {
 
                 }
 
-                if previous.contains_key(&0) {
-                    return [true, false]
-                }
                 
-                return [true, true]
             }
-            
-
-
-
-            return [true, true]
+            if previous.contains_key(&0) {
+                return [true, false]
+            }
+                
+                return [true, true];
         }
 
         let mut complete_check = true;
@@ -189,7 +186,7 @@ impl Board {
     // this is where the magic is gonna happen
     pub fn solve(&mut self, stdout: &mut Stdout) -> bool {
         cli_tools::draw_board::draw_board(self, stdout);
-
+        // self.print_board();
         self.check_board();
         if self.solved {
             return true
