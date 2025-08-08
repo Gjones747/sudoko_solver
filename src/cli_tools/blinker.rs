@@ -38,31 +38,58 @@ pub fn blinker(stdout: &mut Stdout, board: board::board::Board, row: u16, col: u
         let mut toggle = Instant::now();
         let mut show_dash = false;
 
-        execute!(
-            stdout,
-            MoveTo(real_x, real_y),
-            Print(if show_dash {" - "} else {"  "})
-        ).expect("fail");
+        if board.board_array[(row-1) as usize][(col-1) as usize].val == 0 {
+            execute!(
+                stdout,
+                MoveTo(real_x, real_y),
+                Print("  ")
+                ).expect("fail");
+        } else {
+            execute!(
+                stdout,
+                MoveTo(real_x, real_y),
+                ).expect("fail");
+            println!(" {0} ", board.board_array[(row-1) as usize][(col-1) as usize].val)
+        }
 
         loop {
             if toggle.elapsed() >= Duration::from_millis(400) {
                 show_dash = !show_dash;
-                execute!(
-                    stdout,
-                    MoveTo(real_x, real_y),
-                    Print(if show_dash {" - "} else {"  "})
-                ).expect("fail");
+
+                if board.board_array[(row-1) as usize][(col-1) as usize].val == 0 || !show_dash {
+                    execute!(
+                        stdout,
+                        MoveTo(real_x, real_y),
+                        Print(if show_dash {" - "} else {"  "})
+                        ).expect("fail");
+                } else {
+                    execute!(
+                        stdout,
+                        MoveTo(real_x, real_y),
+                        ).expect("fail");
+                        println!(" {0} ", board.board_array[(row-1) as usize][(col-1) as usize].val)
+                }
                 toggle = Instant::now();
+
             }
             
 
             if poll(Duration::from_millis(10)).expect("msg") {
                 if let Event::Key(key_event) = read().expect("msg") {
-                    execute!(
-                        stdout,
-                        MoveTo(real_x, real_y),
-                        Print(" - ")
-                    ).expect("fail");
+
+                    if board.board_array[(row-1) as usize][(col-1) as usize].val == 0 {
+                        execute!(
+                            stdout,
+                            MoveTo(real_x, real_y),
+                            Print(" - ")
+                            ).expect("fail");
+                    } else {
+                        execute!(
+                            stdout,
+                            MoveTo(real_x, real_y),
+                            ).expect("fail");
+                            println!(" {0} ", board.board_array[(row-1) as usize][(col-1) as usize].val)
+                    }
                     return key_event
                 }
             }

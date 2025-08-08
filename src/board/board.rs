@@ -63,14 +63,12 @@ impl Board {
     }
 
     pub fn set_input_tile(&mut self, set_row:i8, set_col:i8, val:i8) {
-        for row in 0..9 {
-            for col in 0..9 {
-                if (row as i8) == set_row && (col as i8) == set_col {
-                    self.board_array[row][col].val = val;
-                    self.board_array[row][col].locked = true;
-                }
-            }
-        }
+        self.board_array[set_row as usize][set_col as usize].val = val;
+        self.board_array[set_row as usize][set_col as usize].locked = true;
+    }
+    // used to delete a value from a locked input -> used if user deletes input square val
+    pub fn delete_set(&mut self, set_row:i8, set_col:i8) {
+        self.board_array[set_row as usize][set_col as usize].val = 0;
     }
 
     // functions associated with board 

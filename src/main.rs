@@ -111,6 +111,23 @@ fn main() {
                 current_row = 10
             }
             current_row -= 1;
+        } else if key_press.code == KeyCode::Backspace {
+            board.delete_set((current_row-1) as i8, (current_col-1) as i8);
+        
+        } else {
+            let pressed_key = key_press.code.as_char().expect("oof ts failed");
+
+            if pressed_key.is_numeric() {
+                
+                let pressed_num = pressed_key as u32 - '0' as u32;
+                if pressed_num == 0 {
+                    board.delete_set((current_row-1) as i8, (current_col-1) as i8);
+
+                } else {
+                    board.set_input_tile((current_row-1) as i8, (current_col-1) as i8, pressed_num as i8);
+
+                }
+            }
         }
 
 
