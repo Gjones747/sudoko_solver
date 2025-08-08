@@ -114,6 +114,10 @@ fn main() {
         } else if key_press.code == KeyCode::Backspace {
             board.delete_set((current_row-1) as i8, (current_col-1) as i8);
         
+        } else if key_press.code == KeyCode::Enter {
+            board.solve(&mut stdout);
+            
+
         } else {
             let pressed_key = key_press.code.as_char().expect("oof ts failed");
 

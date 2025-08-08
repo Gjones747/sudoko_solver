@@ -1,4 +1,6 @@
-use std::{collections::HashMap, iter::Skip};
+use std::{collections::HashMap, io::Stdout, iter::Skip};
+
+use crate::cli_tools;
 
 #[derive(Clone, Copy)]
 pub struct Board {
@@ -185,8 +187,8 @@ impl Board {
     }
 
     // this is where the magic is gonna happen
-    pub fn solve(&mut self) -> bool {
-        self.print_board();
+    pub fn solve(&mut self, stdout: &mut Stdout) -> bool {
+        cli_tools::draw_board::draw_board(self, stdout);
 
         self.check_board();
         if self.solved {
@@ -208,7 +210,7 @@ impl Board {
             
             self.board_array[current[0] as usize][current[1] as usize].val = num;
             if self.check_board() {
-                if self.solve() {
+                if self.solve(stdout) {
                     return true;
                 }
             } 
