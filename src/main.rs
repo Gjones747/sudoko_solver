@@ -1,6 +1,6 @@
-use std::{ io::stdout};
+use std::io::{stdout, Write};
 
-use crossterm::{cursor::Hide, event::{ KeyCode, KeyEvent}, execute, style::SetAttribute, terminal::{self, Clear, ClearType, EnterAlternateScreen}};
+use crossterm::{cursor::{Hide, MoveTo, Show}, event::{ KeyCode, KeyEvent}, execute, style::SetAttribute, terminal::{self, disable_raw_mode, Clear, ClearType, EnterAlternateScreen, LeaveAlternateScreen}, ExecutableCommand};
 
 mod board;
 mod cli_tools;
@@ -66,16 +66,30 @@ fn main() {
 
     ).expect("msg");
     cli_tools::draw_board::draw_board(&board, &mut stdout);
+    cli_tools::draw_info::draw_info(&mut stdout);
 
     let (mut current_row, mut current_col) = (1, 1);
     let mut move_to = false; 
 
     loop {
-
-        let key_press:KeyEvent = cli_tools::blinker::blinker(&mut stdout, board, current_row, current_col, move_to);
+        let key_press:KeyEvent;
+        if !board.solved {
+            key_press = cli_tools::blinker::blinker(&mut stdout, board, current_row, current_col, move_to);
+        } else {
+            current_row = 1;
+            current_col = 1;
+            key_press = cli_tools::solved_screen::solved_screen(&mut stdout);
+            if key_press.code == KeyCode::Char('r') {
+                board = board::board::Board::make_board();
+                stdout.execute(        Clear(ClearType::All)).unwrap();
+                cli_tools::draw_board::draw_board(&board, &mut stdout);
+                cli_tools::draw_info::draw_info(&mut stdout);
+            }
+        }
         move_to = true;
+        
 
-        if key_press.code == KeyCode::Char('q') {
+        if key_press.code == KeyCode::Esc {
             break;
         } else if key_press.code == KeyCode::Right {
             if current_col == 9 {
@@ -135,11 +149,17 @@ fn main() {
 
 
     }
+
     execute!(
         stdout,
-        Clear(ClearType::All)
+        LeaveAlternateScreen,
+        MoveTo(0,0),
+        Show,
+        Clear(ClearType::All),
     ).expect("msg");
+    print!("\x1bc");
+    stdout.flush().unwrap();
 
-    terminal::disable_raw_mode().err();
+    terminal::disable_raw_mode().unwrap();
 }
 
