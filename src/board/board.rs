@@ -69,6 +69,7 @@ impl Board {
     }
     // used to delete a value from a locked input -> used if user deletes input square val
     pub fn delete_set(&mut self, set_row:i8, set_col:i8) {
+        self.board_array[set_row as usize][set_col as usize].locked = false;
         self.board_array[set_row as usize][set_col as usize].val = 0;
     }
 
