@@ -85,7 +85,7 @@ pub fn blinker(stdout: &mut Stdout, board: board::board::Board, row: u16, col: u
             if poll(Duration::from_millis(10)).expect("msg") {
                 if let Event::Key(key_event) = read().expect("msg") {
                     if key_event.kind == KeyEventKind::Press {
-                            if board.board_array[(row-1) as usize][(col-1) as usize].val == 0 {
+                        if board.board_array[(row-1) as usize][(col-1) as usize].val == 0 {
                             execute!(
                                 stdout,
                                 MoveTo(real_x, real_y),
