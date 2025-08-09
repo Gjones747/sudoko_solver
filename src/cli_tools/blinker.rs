@@ -1,6 +1,6 @@
 use std::{io::Stdout, time::{Duration, Instant}};
 
-use crossterm::{cursor::MoveTo, event::{poll, read, Event, KeyEvent}, execute, style::{Print, SetAttribute}, terminal};
+use crossterm::{cursor::MoveTo, event::{poll, read, Event, KeyEvent, KeyEventKind}, execute, style::{Print, SetAttribute}, terminal};
 
 use crate::board;
 
@@ -84,27 +84,28 @@ pub fn blinker(stdout: &mut Stdout, board: board::board::Board, row: u16, col: u
 
             if poll(Duration::from_millis(10)).expect("msg") {
                 if let Event::Key(key_event) = read().expect("msg") {
+                    if key_event.kind == KeyEventKind::Press {
+                            if board.board_array[(row-1) as usize][(col-1) as usize].val == 0 {
+                            execute!(
+                                stdout,
+                                MoveTo(real_x, real_y),
+                                Print(" - ")
+                                ).expect("fail");
+                        } else {
+                            execute!(
+                                stdout,
+                                MoveTo(real_x, real_y),
+                                ).expect("fail");
+                                println!(" {0} ", board.board_array[(row-1) as usize][(col-1) as usize].val)
+                        }
 
-                    if board.board_array[(row-1) as usize][(col-1) as usize].val == 0 {
                         execute!(
-                            stdout,
-                            MoveTo(real_x, real_y),
-                            Print(" - ")
-                            ).expect("fail");
-                    } else {
-                        execute!(
-                            stdout,
-                            MoveTo(real_x, real_y),
-                            ).expect("fail");
-                            println!(" {0} ", board.board_array[(row-1) as usize][(col-1) as usize].val)
+                            stdout, 
+                            SetAttribute(crossterm::style::Attribute::Reset),
+                            SetAttribute(crossterm::style::Attribute::Bold)
+                        ).expect("msg");
+                        return key_event
                     }
-
-                    execute!(
-                        stdout, 
-                        SetAttribute(crossterm::style::Attribute::Reset),
-                        SetAttribute(crossterm::style::Attribute::Bold)
-                    ).expect("msg");
-                    return key_event
                 }
             }
         }
