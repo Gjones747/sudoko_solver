@@ -73,6 +73,11 @@ fn main() {
 
     loop {
         let key_press:KeyEvent;
+        if !board.check_board() {
+            cli_tools::incorrect_input::incorrect_input(&mut stdout, true);
+        } else {
+            cli_tools::incorrect_input::incorrect_input(&mut stdout, false);
+        }
         if !board.solved {
             key_press = cli_tools::blinker::blinker(&mut stdout, board, current_row, current_col, move_to);
         } else {
